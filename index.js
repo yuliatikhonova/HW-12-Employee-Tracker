@@ -28,6 +28,8 @@ function displayMenu() {
             "View All Employees by Department",
             "View All Employees by Manager",
             "Add Employee",
+            "Add Department",
+            "Add Role",
             "Remove employee",
             "Update employee role",
             "Update employee manager"
@@ -40,21 +42,43 @@ function displayMenu() {
                 displayMenu();
                 break;
 
-            case "":
-                searchByOccurance()
-                break
-            case "":
-                searchByRange()
-                break
-            case "":
-                searchBySong()
-                break
-            case "":
-                searchByAlbumAndSong()
-                break
+            case "View All Employees by Department":
+                viewByDepartments();
+                displayMenu();
+                break;
+
+            case "View All Employees by Manager":
+                viewByManager();
+                displayMenu();
+                break;
+
+            case "Add Employee":
+
+                break;
+
+            case "Add Department":
+
+                break;
+
+            case "Add Role":
+
+                break;
+
+            case "Remove employee":
+
+                break;
+
+            case "Update employee role":
+
+                break;
+
+            case "Update employee manager":
+
+                break;
         };
     });
 };
+
 
 
 app.listen(PORT, () => {
