@@ -50,15 +50,17 @@ function displayMenu() {
                 break;
 
             case "View All Employees by Manager":
-                viewByManager();
+                viewByManager();//have to finish
                 break;
 
             case "Add Employee":
-                addEmployee();
-                displayMenu();
+                addEmployee();//have to finish
                 break;
+
             case "Remove Employee":
+                removeEmployee();
                 break;
+
             case "Update Employee Role":
                 break;
             case "Update Employee Manager":
@@ -113,7 +115,7 @@ function viewByDepartments() {
     });
 };
 
-function viewByManager() {
+function viewByManager() {//need to create the query
     inquirer.prompt([
         {
             name: "managerChoice",
@@ -141,7 +143,7 @@ function viewByManager() {
     });
 };
 
-function addEmployee() {
+function addEmployee() {//need to finish creating the query
     inquirer.prompt([
         {
             name: "employeeFirst",
@@ -170,11 +172,59 @@ function addEmployee() {
         },
         {
             name: "manager",
-            type: "input",
-            message: "Please enter manager name",
+            type: "list",
+            message: "Who is the employee's manager?",
+            choices: [
+                "None",
+                "Haniya Farley",
+                "Nazifa Begum",
+                "Aran Akhtar",
+                "Antonia Grey",
+                "Hanan Pearson",
+                "Sommer Stokes",
+                "Olivia Cochran",
+                "Isobella Munoz"
+            ]
         }
 
     ]).then(function (userInput) {
+        let query = "INSERT INTO employee SET first_name = ?, last_name = ?";
 
+        connection.query(query, [userInput.employeeFirst, userInput.employeeLast, userInput.department, userInput.manager], function (error, res) {
+            if (error) throw error;
+            console.log("Added the employee to the data base");
+            displayMenu()
+
+        });
+    });
+};
+
+function removeEmployee() {
+    inquirer.prompt([
+        {
+            name: "remove",
+            type: "list",
+            message: "Which employee do you want to remove?",
+            choices: [
+                "Haniya Farley",
+                "Nazifa Begum",
+                "Aran Akhtar",
+                "Antonia Grey",
+                "Hanan Pearson",
+                "Sommer Stokes",
+                "Olivia Cochran",
+                "Isobella Munoz"
+            ]
+        }
+
+    ]).then(function (userInput) {
+        let query = "DELETE FROM employee WHERE CONCAT(employee.first_name, ' ', employee.last_name) = ?";
+
+        connection.query(query, [userInput.remove], function (error, res) {
+            if (error) throw error;
+            console.log("Removed the employee from the data base");
+            displayMenu()
+
+        });
     });
 };
