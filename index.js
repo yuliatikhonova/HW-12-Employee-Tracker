@@ -62,11 +62,17 @@ function displayMenu() {
                 break;
 
             case "Update Employee Role":
+                updateEmployeeRole();//have to finish
                 break;
+
             case "Update Employee Manager":
+                updateEmployeeManager();//have to finish
                 break;
+
             case "View All Roles":
+                viewAllRoles();
                 break;
+
             case "Add Role":
                 break;
             case "Remove Role":
@@ -226,5 +232,105 @@ function removeEmployee() {
             displayMenu()
 
         });
+    });
+};
+
+function updateEmployeeRole() {//need to create the query
+    inquirer.prompt([
+        {
+            name: "update",
+            type: "list",
+            message: "Which employee's role do you want to update?",
+            choices: [
+                "Haniya Farley",
+                "Nazifa Begum",
+                "Aran Akhtar",
+                "Antonia Grey",
+                "Hanan Pearson",
+                "Sommer Stokes",
+                "Olivia Cochran",
+                "Isobella Munoz"
+            ]
+        },
+        {
+            name: "department",
+            type: "list",
+            message: "Which role do you want to assign the selected employee?",
+            choices: [
+                "Sales Lead",
+                "Sales Person",
+                "Lead Engineer",
+                "Software Engineer",
+                "Accounting Lead",
+                "Accountant",
+                "Legal Team Lead",
+                "Lawyer"
+            ]
+        }
+
+    ]).then(function (userInput) {
+        let query = "";
+
+        connection.query(query, [userInput.update, userInput.department], function (error, res) {
+            if (error) throw error;
+            console.log("Updated the employee's role");
+            displayMenu()
+
+        });
+    });
+};
+
+function updateEmployeeManager() {//need to create the query
+    inquirer.prompt([
+        {
+            name: "update",
+            type: "list",
+            message: "Which employee's manager do you want to update?",
+            choices: [
+                "Haniya Farley",
+                "Nazifa Begum",
+                "Aran Akhtar",
+                "Antonia Grey",
+                "Hanan Pearson",
+                "Sommer Stokes",
+                "Olivia Cochran",
+                "Isobella Munoz"
+            ]
+        },
+        {
+            name: "manager",
+            type: "list",
+            message: "Which employee do you want to set as manager for the selected employee?",
+            choices: [
+                "Haniya Farley",
+                "Nazifa Begum",
+                "Aran Akhtar",
+                "Antonia Grey",
+                "Hanan Pearson",
+                "Sommer Stokes",
+                "Olivia Cochran",
+                "Isobella Munoz"
+            ]
+        }
+
+    ]).then(function (userInput) {
+        let query = "";
+
+        connection.query(query, [userInput.update, userInput.manager], function (error, res) {
+            if (error) throw error;
+            console.log("Updated the employee's manager");
+            displayMenu()
+
+        });
+    });
+};
+
+function viewAllRoles() {
+    let query = "SELECT role.id, role.title, department.d_name as department, role.salary FROM role LEFT JOIN department on role.department_id = department.id;";
+
+    connection.query(query, function (error, res) {
+        if (error) throw error;
+        console.table(res);
+        displayMenu()
     });
 };
