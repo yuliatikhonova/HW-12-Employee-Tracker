@@ -23,7 +23,6 @@ function displayMenu() {
         type: "list",
         message: "What would you like to to?",
         choices: [
-
             "View All Employees",
             "View All Employees by Department",
             "View All Employees by Manager",
@@ -38,116 +37,144 @@ function displayMenu() {
             "Add Department",
             "Remove Department",
             "Quit"
-
         ]
 
     }).then(function (userInput) {
         switch (userInput.choice) {
             case "View All Employees":
                 viewEmployees();
-                displayMenu()
                 break;
 
             case "View All Employees by Department":
                 viewByDepartments();
-                displayMenu();
                 break;
 
             case "View All Employees by Manager":
                 viewByManager();
-                displayMenu();
                 break;
 
             case "Add Employee":
-                inquirer.prompt([
-                    {
-                        name: "employeeFirst",
-                        type: "input",
-                        message: "What is the employee's first name?"
-                    },
-                    {
-                        name: "employeeLast",
-                        type: "input",
-                        message: "What is the employee's last name?"
-                    },
-                    {
-                        name: "department",
-                        type: "list",
-                        message: "What is the employee's role?",
-                        choices: [
-                            "Sales Lead",
-                            "Sales Person",
-                            "Lead Engineer",
-                            "Software Engineer",
-                            "Accounting Lead",
-                            "Accountant",
-                            "Legal Team Lead",
-                            "Lawyer"
-                        ]
-                    },
-                    {
-                        name: "manager",
-                        type: "input",
-                        message: "Please enter manager name",
-                    }
-
-                ]).then(function (userInput) {
-                    addEmployee(userInput.employeeFirst, userInput.employeeLast, userInput.department, userInput.manager);
-                    displayMenu();
-                });
+                addEmployee();
+                displayMenu();
                 break;
-
             case "Remove Employee":
-
                 break;
-
             case "Update Employee Role":
-
                 break;
-
             case "Update Employee Manager":
-
                 break;
-
             case "View All Roles":
-
                 break;
-
             case "Add Role":
-
                 break;
-
             case "Remove Role":
-
                 break;
-
             case "View All Department":
-
                 break;
-
             case "Add Department":
-
                 break;
-
             case "Remove Department":
-
                 break;
-
-
         };
     });
 };
 
 function viewEmployees() {
-    let data = connection.query("SELECT employee.id, employee.first_name, employee.last_name, role.title, department.d_name AS department, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department on role.department_id = department.id LEFT JOIN employee manager on manager.id = employee.manager_id;",
+    let query = "SELECT employee.id, employee.first_name, employee.last_name, role.title, department.d_name AS department, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department on role.department_id = department.id LEFT JOIN employee manager on manager.id = employee.manager_id;";
 
-    function (error, data) {
+    connection.query(query, function (error, res) {
         if (error) throw error;
-        console.table(data);
+        console.table(res);
+        displayMenu()
     });
 };
 
+function viewByDepartments() {
+    inquirer.prompt([
+        {
+            name: "departmentChoice",
+            type: "list",
+            message: "Which department would you like to see employees for?",
+            choices: [
+                "Sales",
+                "Engineering",
+                "Finance",
+                "Legal"
+            ]
+        }
+    ]).then(function (userInput) {
+        let query = "SELECT employee.id, employee.first_name, employee.last_name, role.title FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department on role.department_id = department.id WHERE department.d_name = ?;";
 
+        connection.query(query, [userInput.departmentChoice], function (error, res) {
+            if (error) throw error;
+            console.table(res);
+            displayMenu()
+        });
+    });
+};
 
+function viewByManager() {
+    inquirer.prompt([
+        {
+            name: "managerChoice",
+            type: "list",
+            message: "Which employee do you want to see direct reports for?",
+            choices: [
+                "Haniya Farley",
+                "Nazifa Begum",
+                "Aran Akhtar",
+                "Antonia Grey",
+                "Hanan Pearson",
+                "Sommer Stokes",
+                "Olivia Cochran",
+                "Isobella Munoz"
+            ]
+        }
+    ]).then(function (userInput) {
+        let query = "";
 
+        connection.query(query, [userInput.managerChoice], function (error, res) {
+            if (error) throw error;
+            console.table(res);
+            displayMenu()
+        });
+    });
+};
 
+function addEmployee() {
+    inquirer.prompt([
+        {
+            name: "employeeFirst",
+            type: "input",
+            message: "What is the employee's first name?"
+        },
+        {
+            name: "employeeLast",
+            type: "input",
+            message: "What is the employee's last name?"
+        },
+        {
+            name: "department",
+            type: "list",
+            message: "What is the employee's role?",
+            choices: [
+                "Sales Lead",
+                "Sales Person",
+                "Lead Engineer",
+                "Software Engineer",
+                "Accounting Lead",
+                "Accountant",
+                "Legal Team Lead",
+                "Lawyer"
+            ]
+        },
+        {
+            name: "manager",
+            type: "input",
+            message: "Please enter manager name",
+        }
+
+    ]).then(function (userInput) {
+
+    });
+};
