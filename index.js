@@ -1,6 +1,5 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
-const cTable = require("console.table")
 
 
 const connection = mysql.createConnection({
@@ -24,22 +23,29 @@ function displayMenu() {
         type: "list",
         message: "What would you like to to?",
         choices: [
+
             "View All Employees",
             "View All Employees by Department",
             "View All Employees by Manager",
             "Add Employee",
-            "Add Department",
+            "Remove Employee",
+            "Update Employee Role",
+            "Update Employee Manager",
+            "View All Roles",
             "Add Role",
-            "Remove employee",
-            "Update employee role",
-            "Update employee manager"
+            "Remove Role",
+            "View All Department",
+            "Add Department",
+            "Remove Department",
+            "Quit"
+
         ]
 
     }).then(function (userInput) {
         switch (userInput.choice) {
             case "View All Employees":
                 viewEmployees();
-                displayMenu();
+                displayMenu()
                 break;
 
             case "View All Employees by Department":
@@ -53,10 +59,57 @@ function displayMenu() {
                 break;
 
             case "Add Employee":
+                inquirer.prompt([
+                    {
+                        name: "employeeFirst",
+                        type: "input",
+                        message: "What is the employee's first name?"
+                    },
+                    {
+                        name: "employeeLast",
+                        type: "input",
+                        message: "What is the employee's last name?"
+                    },
+                    {
+                        name: "department",
+                        type: "list",
+                        message: "What is the employee's role?",
+                        choices: [
+                            "Sales Lead",
+                            "Sales Person",
+                            "Lead Engineer",
+                            "Software Engineer",
+                            "Accounting Lead",
+                            "Accountant",
+                            "Legal Team Lead",
+                            "Lawyer"
+                        ]
+                    },
+                    {
+                        name: "manager",
+                        type: "input",
+                        message: "Please enter manager name",
+                    }
+
+                ]).then(function (userInput) {
+                    addEmployee(userInput.employeeFirst, userInput.employeeLast, userInput.department, userInput.manager);
+                    displayMenu();
+                });
+                break;
+
+            case "Remove Employee":
 
                 break;
 
-            case "Add Department":
+            case "Update Employee Role":
+
+                break;
+
+            case "Update Employee Manager":
+
+                break;
+
+            case "View All Roles":
 
                 break;
 
@@ -64,24 +117,37 @@ function displayMenu() {
 
                 break;
 
-            case "Remove employee":
+            case "Remove Role":
 
                 break;
 
-            case "Update employee role":
+            case "View All Department":
 
                 break;
 
-            case "Update employee manager":
+            case "Add Department":
 
                 break;
+
+            case "Remove Department":
+
+                break;
+
+
         };
+    });
+};
+
+function viewEmployees() {
+    let data = connection.query("SELECT employee.id, employee.first_name, employee.last_name, role.title, department.d_name AS department, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department on role.department_id = department.id LEFT JOIN employee manager on manager.id = employee.manager_id;",
+
+    function (error, data) {
+        if (error) throw error;
+        console.table(data);
     });
 };
 
 
 
-app.listen(PORT, () => {
-    console.log(`Server is listening on PORT ${PORT}`);
-});
+
 
