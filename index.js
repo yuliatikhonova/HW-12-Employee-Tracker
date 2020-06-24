@@ -33,7 +33,7 @@ function displayMenu() {
             "View All Roles",
             "Add Role",
             "Remove Role",
-            "View All Department",
+            "View All Departments",
             "Add Department",
             "Remove Department",
             "Quit"
@@ -81,11 +81,16 @@ function displayMenu() {
                 removeRole();
                 break;
 
-            case "View All Department":
+            case "View All Departments":
+                viewAllDepartments();
                 break;
+
             case "Add Department":
                 break;
             case "Remove Department":
+                break;
+            case "Quit":
+                console.log("Goodbye!");
                 break;
         };
     });
@@ -402,5 +407,15 @@ function removeRole() {
             displayMenu()
 
         });
+    });
+};
+
+function viewAllDepartments() {
+    let query = "SELECT * FROM department";
+
+    connection.query(query, function (error, res) {
+        if (error) throw error;
+        console.table(res);
+        displayMenu()
     });
 };
