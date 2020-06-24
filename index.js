@@ -74,9 +74,13 @@ function displayMenu() {
                 break;
 
             case "Add Role":
+                addRole();//have to finish
                 break;
+
             case "Remove Role":
+                removeRole();
                 break;
+
             case "View All Department":
                 break;
             case "Add Department":
@@ -332,5 +336,71 @@ function viewAllRoles() {
         if (error) throw error;
         console.table(res);
         displayMenu()
+    });
+};
+
+function addRole() {//need to creating the query
+    inquirer.prompt([
+        {
+            name: "newRole",
+            type: "input",
+            message: "What is the name of the role?"
+        },
+        {
+            name: "salary",
+            type: "input",
+            message: "What is the salary of the role?"
+        },
+        {
+            name: "department",
+            type: "list",
+            message: "Which department does the role belong to?",
+            choices: [
+                "Sales",
+                "Engineering",
+                "Finance",
+                "Legal"
+            ]
+        }
+
+    ]).then(function (userInput) {
+        let query = "";
+
+        connection.query(query, [userInput.newRole, userInput.salary, userInput.department], function (error, res) {
+            if (error) throw error;
+            console.log("Added the new role to the data base");
+            displayMenu()
+
+        });
+    });
+};
+
+function removeRole() {
+    inquirer.prompt([
+        {
+            name: "remove",
+            type: "list",
+            message: "Which role would you like to remove?",
+            choices: [
+                "Sales Lead",
+                "Sales Person",
+                "Lead Engineer",
+                "Software Engineer",
+                "Accounting Lead",
+                "Accountant",
+                "Legal Team Lead",
+                "Lawyer"
+            ]
+        }
+
+    ]).then(function (userInput) {
+        let query = "DELETE FROM role WHERE role.title = ?";
+
+        connection.query(query, [userInput.remove], function (error, res) {
+            if (error) throw error;
+            console.log("Removed the role from the data base");
+            displayMenu()
+
+        });
     });
 };
