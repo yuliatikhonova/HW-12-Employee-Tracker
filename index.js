@@ -62,11 +62,11 @@ function displayMenu() {
                 break;
 
             case "Update Employee Role":
-                updateEmployeeRole();//have to finish
+                updateEmployeeRole();//have to finish the query
                 break;
 
             case "Update Employee Manager":
-                updateEmployeeManager();//have to finish
+                updateEmployeeManager();//Bonus not done
                 break;
 
             case "View All Roles":
@@ -74,7 +74,7 @@ function displayMenu() {
                 break;
 
             case "Add Role":
-                addRole();//have to finish
+                addRole();
                 break;
 
             case "Remove Role":
@@ -82,15 +82,15 @@ function displayMenu() {
                 break;
 
             case "View All Departments":
-                viewAllDepartments();//might need work
+                viewAllDepartments();
                 break;
 
             case "Add Department":
-                addDepartment();//have to finish
+                addDepartment();
                 break;
 
             case "Remove Department":
-                removeDepartment();//have to finish
+                removeDepartment();
                 break;
 
             case "Quit":
@@ -203,10 +203,9 @@ function addEmployee() {
                     //got from employee ( first and last name aka answer.manager) need to convert to manager_id
                     let roleId = answer[0].id;
 
+                    let query = "INSERT INTO employee SET first_name = ?, last_name = ?, role_id = ?;";
 
-                    let query ="INSERT INTO employee SET first_name = ?, last_name = ?, role_id = ?;";
-
-                    connection.query(query,[userInput.employeeFirst, userInput.employeeLast, roleId], function (errer, results) {
+                    connection.query(query, [userInput.employeeFirst, userInput.employeeLast, roleId], function (errer, results) {
                         if (errer) throw errer;
                         console.log('Added the employee to the data base');
                         displayMenu();
@@ -217,128 +216,122 @@ function addEmployee() {
     });
 };
 
-function removeEmployee() {//BONUS. create the list for the choices
-    inquirer.prompt([
-        {
-            name: "remove",
-            type: "list",
-            message: "Which employee do you want to remove?",
-            choices: [
-                "Haniya Farley",
-                "Nazifa Begum",
-                "Aran Akhtar",
-                "Antonia Grey",
-                "Hanan Pearson",
-                "Sommer Stokes",
-                "Olivia Cochran",
-                "Isobella Munoz"
-            ]
-        }
+function removeEmployee() {
+    let employeeList = [];
 
-    ]).then(function (userInput) {
-        let query = "DELETE FROM employee WHERE CONCAT(employee.first_name, ' ', employee.last_name) = ?";
+    connection.query('SELECT * FROM employee', function (err, result) {
+        if (err) throw err;
+        for (let i = 0; i < result.length; i++) {
+            employeeList.push(result[i].first_name + ' ' + result[i].last_name);
+        };
+        inquirer.prompt([
+            {
+                name: "remove",
+                type: "list",
+                message: "Which employee do you want to remove?",
+                choices: employeeList
+            }
+        ]).then(function (userInput) {
+            let query = "DELETE FROM employee WHERE CONCAT(employee.first_name, ' ', employee.last_name) = ?";
+            connection.query(query, [userInput.remove], function (error, res) {
+                if (error) throw error;
+                console.log("Removed the employee from the data base");
+                displayMenu()
 
-        connection.query(query, [userInput.remove], function (error, res) {
-            if (error) throw error;
-            console.log("Removed the employee from the data base");
-            displayMenu()
-
+            });
         });
     });
 };
 
 function updateEmployeeRole() {//NEED. need to create the query
-    //create the empty lists
+    let employeeList = [];
+    let titleList = [];
 
-    inquirer.prompt([
-        {
-            name: "update",
-            type: "list",
-            message: "Which employee's role do you want to update?",
-            choices: [
-                "Haniya Farley",
-                "Nazifa Begum",
-                "Aran Akhtar",
-                "Antonia Grey",
-                "Hanan Pearson",
-                "Sommer Stokes",
-                "Olivia Cochran",
-                "Isobella Munoz"
-            ]
-        },
-        {
-            name: "department",
-            type: "list",
-            message: "Which role do you want to assign the selected employee?",
-            choices: [
-                "Sales Lead",
-                "Sales Person",
-                "Lead Engineer",
-                "Software Engineer",
-                "Accounting Lead",
-                "Accountant",
-                "Legal Team Lead",
-                "Lawyer"
-            ]
-        }
+    connection.query("SELECT employee.id, employee.first_name, employee.last_name, role.title  FROM employee LEFT JOIN role ON employee.role_id = role.id;", function (error, res) {
+        if (error) throw err;
+        for (let i = 0; i < res.length; i++) {
+            titleList.push(res[i].title);
+            employeeList.push(res[i].first_name + ' ' + res[i].last_name);
+        };
 
-    ]).then(function (userInput) {
-        let query = "";
+        inquirer.prompt([
+            {
+                name: "update",
+                type: "list",
+                message: "Which employee's role do you want to update?",
+                choices: employeeList
+            },
+            {
+                name: "title",
+                type: "list",
+                message: "Which role do you want to assign the selected employee?",
+                choices: titleList
+            }
 
-        //
+        ]).then(function (userInput) {
+            // let query = "";
 
-        connection.query(query, [userInput.update, userInput.department], function (error, res) {
-            if (error) throw error;
-            console.log("Updated the employee's role");
-            displayMenu()
+            // connection.query(query, [userInput.update, userInput.title], function (error, res) {
+            //     if (error) throw error;
+            //     console.log("Updated the employee's role");
+            //     displayMenu()
+
+            // });
+            console.log("Work in progress");
+            displayMenu();
 
         });
     });
 };
 
-function updateEmployeeManager() {//BONUS. need to create the query
-    inquirer.prompt([
-        {
-            name: "update",
-            type: "list",
-            message: "Which employee's manager do you want to update?",
-            choices: [
-                "Haniya Farley",
-                "Nazifa Begum",
-                "Aran Akhtar",
-                "Antonia Grey",
-                "Hanan Pearson",
-                "Sommer Stokes",
-                "Olivia Cochran",
-                "Isobella Munoz"
-            ]
-        },
-        {
-            name: "manager",
-            type: "list",
-            message: "Which employee do you want to set as manager for the selected employee?",
-            choices: [
-                "Haniya Farley",
-                "Nazifa Begum",
-                "Aran Akhtar",
-                "Antonia Grey",
-                "Hanan Pearson",
-                "Sommer Stokes",
-                "Olivia Cochran",
-                "Isobella Munoz"
-            ]
-        }
+function updateEmployeeManager() {//BONUS. 
+    console.log("Coming Soon!");
+    displayMenu()
 
-    ]).then(function (userInput) {
-        let query = "";
+    // inquirer.prompt([
+    //     {
+    //         name: "update",
+    //         type: "list",
+    //         message: "Which employee's manager do you want to update?",
+    //         choices: [
+    //             "Haniya Farley",
+    //             "Nazifa Begum",
+    //             "Aran Akhtar",
+    //             "Antonia Grey",
+    //             "Hanan Pearson",
+    //             "Sommer Stokes",
+    //             "Olivia Cochran",
+    //             "Isobella Munoz"
+    //         ]
+    //     },
+    //     {
+    //         name: "manager",
+    //         type: "list",
+    //         message: "Which employee do you want to set as manager for the selected employee?",
+    //         choices: [
+    //             "Haniya Farley",
+    //             "Nazifa Begum",
+    //             "Aran Akhtar",
+    //             "Antonia Grey",
+    //             "Hanan Pearson",
+    //             "Sommer Stokes",
+    //             "Olivia Cochran",
+    //             "Isobella Munoz"
+    //         ]
+    //     }
 
-        connection.query(query, [userInput.update, userInput.manager], function (error, res) {
-            if (error) throw error;
-            console.log("Updated the employee's manager");
-            displayMenu()
+    // ]).then(function (userInput) {
+    //     let query = "";
 
-        });
-    });
+    //     connection.query(query, [userInput.update, userInput.manager], function (error, res) {
+    //         if (error) throw error;
+    //         console.log("Updated the employee's manager");
+    //         displayMenu()
+
+    //     });
+    // });
+
+
 };
 
 function viewAllRoles() {
@@ -351,7 +344,9 @@ function viewAllRoles() {
     });
 };
 
-function addRole() {//NEED. need to creating the query
+function addRole() {
+    let departmentList = [];
+
     inquirer.prompt([
         {
             name: "newRole",
@@ -362,57 +357,64 @@ function addRole() {//NEED. need to creating the query
             name: "salary",
             type: "input",
             message: "What is the salary of the role?"
-        },
-        {
-            name: "department",
-            type: "list",
-            message: "Which department does the role belong to?",
-            choices: [
-                "Sales",
-                "Engineering",
-                "Finance",
-                "Legal"
-            ]
         }
-
     ]).then(function (userInput) {
-        let query = "";
 
-        connection.query(query, [userInput.newRole, userInput.salary, userInput.department], function (error, res) {
+        connection.query("SELECT * FROM department;", function (error, res) {
             if (error) throw error;
-            console.log("Added the new role to the data base");
-            displayMenu()
 
+            for (let i = 0; i < res.length; i++) {
+                departmentList.push(res[i].d_name);
+            };
+
+            inquirer.prompt({
+                name: "department",
+                type: "list",
+                message: "Which department does the role belong to?",
+                choices: departmentList
+            }).then(function (roleChoice) {
+
+                connection.query("SELECT * FROM department WHERE d_name = ? ", [roleChoice.department], function (err, answer) {
+                    if (err) throw err;
+
+                    let depId = answer[0].id;
+
+                    let query = "INSERT INTO role SET title = ?, salary = ?, department_id = ?;";
+
+                    connection.query(query, [userInput.newRole, userInput.salary, depId], function (errer, results) {
+                        if (errer) throw errer;
+                        console.log('Added the new role to the data base');
+                        displayMenu();
+                    });
+                });
+            });
         });
     });
 };
 
 function removeRole() {
-    inquirer.prompt([
-        {
-            name: "remove",
-            type: "list",
-            message: "Which role would you like to remove?",
-            choices: [
-                "Sales Lead",
-                "Sales Person",
-                "Lead Engineer",
-                "Software Engineer",
-                "Accounting Lead",
-                "Accountant",
-                "Legal Team Lead",
-                "Lawyer"
-            ]
-        }
+    let roleList = [];
 
-    ]).then(function (userInput) {
-        let query = "DELETE FROM role WHERE role.title = ?";
+    connection.query('SELECT * FROM role', function (err, result) {
+        if (err) throw err;
+        for (let i = 0; i < result.length; i++) {
+            roleList.push(result[i].title);
+        };
+        inquirer.prompt([
+            {
+                name: "remove",
+                type: "list",
+                message: "Which role would you like to remove?",
+                choices: roleList
+            }
+        ]).then(function (userInput) {
+            let query = "DELETE FROM role WHERE title = ?";
+            connection.query(query, [userInput.remove], function (error, res) {
+                if (error) throw error;
+                console.log("Removed the employee from the data base");
+                displayMenu()
 
-        connection.query(query, [userInput.remove], function (error, res) {
-            if (error) throw error;
-            console.log("Removed the role from the data base");
-            displayMenu()
-
+            });
         });
     });
 };
@@ -427,7 +429,7 @@ function viewAllDepartments() {
     });
 };
 
-function addDepartment() {//NEED. need to creating the query
+function addDepartment() {
     inquirer.prompt([
         {
             name: "newDepartment",
@@ -436,7 +438,7 @@ function addDepartment() {//NEED. need to creating the query
         }
 
     ]).then(function (userInput) {
-        let query = "";
+        let query = "INSERT INTO department SET d_name = ?";
 
         connection.query(query, [userInput.newDepartment], function (error, res) {
             if (error) throw error;
@@ -447,38 +449,29 @@ function addDepartment() {//NEED. need to creating the query
     });
 };
 
-function removeDepartment() {//BONUS. need to test the query
-    inquirer.prompt([
-        {
-            name: "remove",
-            type: "list",
-            message: "Which department does the role belong to?",
-            choices: [
-                "Sales",
-                "Engineering",
-                "Finance",
-                "Legal"
-            ]
-        }
+function removeDepartment() {
+    let depList = [];
 
-    ]).then(function (userInput) {
-        let query = "DELETE FROM department WHERE department.d_name = ?";
+    connection.query('SELECT * FROM department', function (err, result) {
+        if (err) throw err;
+        for (let i = 0; i < result.length; i++) {
+            depList.push(result[i].d_name);
+        };
+        inquirer.prompt([
+            {
+                name: "remove",
+                type: "list",
+                message: "Which department does the role belong to?",
+                choices: depList
+            }
+        ]).then(function (userInput) {
+            let query = "DELETE FROM department WHERE department.d_name = ?";
+            connection.query(query, [userInput.remove], function (error, res) {
+                if (error) throw error;
+                console.log("Removed the department from the data base");
+                displayMenu()
 
-        connection.query(query, [userInput.remove], function (error, res) {
-            if (error) throw error;
-            console.log("Removed the department from the data base");
-            displayMenu()
-
+            });
         });
     });
 };
-
-
-
-
-
-// let query = "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?),(?),(?),(?);";
-
-// ,
-// connection.query("SELECT * FROM role WHERE title = ?", [roleChoice.title], function (err, results) {
-//     if (err) throw err;
