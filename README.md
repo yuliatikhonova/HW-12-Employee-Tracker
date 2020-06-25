@@ -31,7 +31,9 @@
 
 ## Usage
 
-  Type npm start in the terminal to launch the tracker 
+  Type the command in to the terminal to launch the tracker 
+
+  * npm start
 
 ## License
   Licenses used in this project:
